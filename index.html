@@ -347,6 +347,7 @@
       <div class="controls" id="controls" style="display: none">
         <button id="changePassBtn">Change Password</button>
         <button id="toggleBtn">HTML</button>
+        <button id="downloadBtn">Download</button>
         <button id="saveBtn">Save</button>
       </div>
     </header>
@@ -407,6 +408,7 @@
       const changePassBtn = document.getElementById("changePassBtn");
       const toggleBtn = document.getElementById("toggleBtn");
       const saveBtn = document.getElementById("saveBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
       const editor = document.getElementById("editor");
       const rendered = document.getElementById("rendered");
       const passwordModal = document.getElementById("passwordModal");
@@ -439,6 +441,29 @@
             fontFamily: '"Signika", Arial, sans-serif',
           },
         }).showToast();
+      }
+
+      function downloadContent() {
+        let content, type, extension;
+        if (currentMode === "md") {
+          content = editor.value;
+          type = "text/markdown";
+          extension = "md";
+        } else {
+          content = rendered.innerHTML;
+          type = "text/html";
+          extension = "html";
+        }
+
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${currentFilename || "document"}.${extension}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       }
 
       function getFilenameFromURL() {
@@ -637,6 +662,7 @@
       docNameInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") handleGo();
       });
+      downloadBtn.addEventListener("click", downloadContent);
 
       window.addEventListener("beforeunload", (e) => {
         if (editor.value !== savedContent) {
