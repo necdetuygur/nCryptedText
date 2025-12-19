@@ -323,6 +323,7 @@
         <a href=".">nCryptedText</a>
       </div>
       <div class="controls" id="controls" style="display: none">
+        <button id="changePassBtn">Change Password</button>
         <button id="toggleBtn">HTML</button>
         <button id="saveBtn">Save</button>
       </div>
@@ -365,6 +366,9 @@
       let markdownContent = "";
       let isNewFile = false;
 
+      let isChangingPassword = false;
+
+      const changePassBtn = document.getElementById("changePassBtn");
       const toggleBtn = document.getElementById("toggleBtn");
       const saveBtn = document.getElementById("saveBtn");
       const editor = document.getElementById("editor");
@@ -483,7 +487,7 @@
         passwordInput.value = "";
         passwordConfirmInput.value = "";
 
-        if (isNewFile) {
+        if (isNewFile || isChangingPassword) {
           passwordConfirmInput.style.display = "block";
         } else {
           passwordConfirmInput.style.display = "none";
@@ -513,6 +517,16 @@
           landing.style.display = "none";
           editorArea.style.display = "block";
           controls.style.display = "flex";
+        } else if (isChangingPassword) {
+          const confirmPassword = passwordConfirmInput.value;
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+          currentPassword = password;
+          saveDocument();
+          passwordModal.style.display = "none";
+          isChangingPassword = false;
         } else {
           const encryptedContent = await loadFile(currentFilename);
           if (!encryptedContent) {
@@ -548,6 +562,10 @@
         window.location.href = `?n=${encodeURIComponent(docName)}`;
       }
 
+      changePassBtn.addEventListener("click", () => {
+        isChangingPassword = true;
+        showPasswordModal("Change Password");
+      });
       toggleBtn.addEventListener("click", toggleMode);
       saveBtn.addEventListener("click", saveDocument);
       passwordSubmit.addEventListener("click", handlePasswordSubmit);
