@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>nCryptedText</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Signika:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #0f1a26;
+        color: #b8c5d6;
+        font-family: "Signika", Arial, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: #112233;
+        padding: 0.35rem 1rem;
+        border-bottom: 1px solid #1a334d;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .logo {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #7d9db8;
+      }
+
+      .controls {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+
+      button {
+        font-family: "Signika", Arial, sans-serif;
+        background: #1a334d;
+        color: #b8c5d6;
+        border: 1px solid #2a4d6d;
+        padding: 0.35rem 0.7rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: #2a4d6d;
+        border-color: #3a5d7d;
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      .content {
+        flex: 1;
+        padding: 1rem;
+        overflow: auto;
+      }
+
+      textarea {
+        width: 100%;
+        height: 100%;
+        min-height: calc(100vh - 75px);
+        background: #0a1219;
+        color: #b8c5d6;
+        border: 1px solid #1a334d;
+        border-radius: 6px;
+        padding: 1rem;
+        font-family: "JetBrains Mono", "Fira Code", "Source Code Pro",
+          "Cascadia Code", "Menlo", "Monaco", "Consolas", "Liberation Mono",
+          "DejaVu Sans Mono", "Courier New", monospace;
+        font-size: 0.95rem;
+        resize: vertical;
+        line-height: 1.6;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: #2a4d6d;
+      }
+
+      .rendered {
+        background: #0a1219;
+        border: 1px solid #1a334d;
+        border-radius: 6px;
+        padding: 1.5rem;
+        line-height: 1.7;
+        max-width: 900px;
+        margin: 0 auto;
+        font-family: "Signika", Arial, sans-serif;
+      }
+
+      .rendered h1 {
+        color: #7d9db8;
+        margin-bottom: 1rem;
+        font-size: 1.8rem;
+      }
+
+      .rendered h2 {
+        color: #7d9db8;
+        margin-top: 1.5rem;
+        margin-bottom: 0.8rem;
+        font-size: 1.4rem;
+      }
+
+      .rendered h3 {
+        color: #7d9db8;
+        margin-top: 1.2rem;
+        margin-bottom: 0.6rem;
+        font-size: 1.2rem;
+      }
+
+      .rendered p {
+        margin-bottom: 1rem;
+      }
+
+      .rendered code {
+        background: #112233;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+        font-size: 0.9em;
+      }
+
+      .rendered pre {
+        background: #112233;
+        padding: 1rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        margin: 1rem 0;
+      }
+
+      .rendered pre code {
+        background: none;
+        padding: 0;
+      }
+
+      .rendered ul,
+      .rendered ol {
+        margin-left: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .rendered li {
+        margin-bottom: 0.4rem;
+      }
+
+      .rendered a {
+        color: #5a8db8;
+        text-decoration: none;
+      }
+
+      .rendered a:hover {
+        text-decoration: underline;
+      }
+
+      .rendered blockquote {
+        border-left: 3px solid #2a4d6d;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #8a9db6;
+      }
+
+      .landing {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 80px);
+      }
+
+      .landing-content {
+        background: #112233;
+        padding: 2rem;
+        border-radius: 8px;
+        border: 1px solid #2a4d6d;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .landing-content h2 {
+        color: #7d9db8;
+        margin-bottom: 1.5rem;
+        font-size: 1.3rem;
+        text-align: center;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        flex: 1;
+        background: #0a1219;
+        color: #b8c5d6;
+        border: 1px solid #1a334d;
+        padding: 0.6rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-family: "Signika", Arial, sans-serif;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #2a4d6d;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: #112233;
+        padding: 2rem;
+        border-radius: 8px;
+        border: 1px solid #2a4d6d;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .modal-content h2 {
+        color: #7d9db8;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .modal-content input {
+        width: 100%;
+        background: #0a1219;
+        color: #b8c5d6;
+        border: 1px solid #1a334d;
+        padding: 0.6rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .error {
+        color: #d88;
+        padding: 1rem;
+        background: #2a1a1a;
+        border: 1px solid #4a2a2a;
+        border-radius: 6px;
+        margin: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .logo {
+          font-size: 1rem;
+        }
+
+        button {
+          font-size: 0.8rem;
+          padding: 0.3rem 0.6rem;
+        }
+
+        .content {
+          padding: 0.8rem;
+        }
+
+        .rendered {
+          padding: 1rem;
+        }
+
+        textarea {
+          font-size: 0.9rem;
+        }
+
+        .landing-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <a href=".">nCryptedText</a>
+      </div>
+      <div class="controls" id="controls" style="display: none">
+        <button id="toggleBtn">HTML</button>
+        <button id="saveBtn">Save</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <div id="landing" class="landing">
+        <div class="landing-content">
+          <h2>Enter Document Name</h2>
+          <div class="input-group">
+            <input type="text" id="docNameInput" placeholder="Document name" />
+            <button id="goBtn">Go</button>
+          </div>
+        </div>
+      </div>
+      <div id="editorArea" style="display: none">
+        <textarea id="editor"></textarea>
+        <div id="rendered" class="rendered" style="display: none"></div>
+      </div>
+    </div>
+
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <h2 id="passwordTitle">Enter Password</h2>
+        <input type="password" id="passwordInput" placeholder="Password" />
+        <button id="passwordSubmit" style="width: 100%">Submit</button>
+      </div>
+    </div>
+
+    <script>
+      let currentMode = "md";
+      let currentPassword = "";
+      let currentFilename = "";
+      let markdownContent = "";
+      let isNewFile = false;
+
+      const toggleBtn = document.getElementById("toggleBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const editor = document.getElementById("editor");
+      const rendered = document.getElementById("rendered");
+      const passwordModal = document.getElementById("passwordModal");
+      const passwordInput = document.getElementById("passwordInput");
+      const passwordSubmit = document.getElementById("passwordSubmit");
+      const passwordTitle = document.getElementById("passwordTitle");
+      const landing = document.getElementById("landing");
+      const editorArea = document.getElementById("editorArea");
+      const controls = document.getElementById("controls");
+      const docNameInput = document.getElementById("docNameInput");
+      const goBtn = document.getElementById("goBtn");
+
+      function getFilenameFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("n");
+      }
+
+      async function checkFileExists(filename) {
+        try {
+          const response = await fetch(`/check/${filename}`);
+          const data = await response.json();
+          return data.exists;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      async function loadFile(filename) {
+        try {
+          const response = await fetch(`/load/${filename}`);
+          if (!response.ok) return null;
+          return await response.text();
+        } catch (error) {
+          return null;
+        }
+      }
+
+      async function saveFile(filename, content) {
+        try {
+          const response = await fetch("/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ filename, content }),
+          });
+          return response.ok;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function decrypt(encryptedData, password) {
+        try {
+          const bytes = CryptoJS.AES.decrypt(encryptedData, password);
+          const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+          if (!decrypted) throw new Error("Decryption failed");
+          return decrypted;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function encrypt(data, password) {
+        return CryptoJS.AES.encrypt(data, password).toString();
+      }
+
+      function renderMarkdown(md) {
+        rendered.innerHTML = marked.parse(md);
+      }
+
+      function toggleMode() {
+        if (currentMode === "html") {
+          currentMode = "md";
+          toggleBtn.textContent = "HTML";
+          markdownContent = editor.value;
+          editor.style.display = "block";
+          rendered.style.display = "none";
+        } else {
+          currentMode = "html";
+          toggleBtn.textContent = "MD";
+          markdownContent = editor.value;
+          renderMarkdown(markdownContent);
+          editor.style.display = "none";
+          rendered.style.display = "block";
+        }
+      }
+
+      async function saveDocument() {
+        if (!currentPassword) {
+          alert("Password not set");
+          return;
+        }
+
+        const content = editor.value;
+        const encrypted = encrypt(content, currentPassword);
+
+        const success = await saveFile(currentFilename, encrypted);
+        if (success) {
+          alert("File saved successfully!");
+          isNewFile = false;
+          markdownContent = content;
+        } else {
+          alert("Save failed");
+        }
+      }
+
+      function showPasswordModal(title) {
+        passwordTitle.textContent = title;
+        passwordModal.style.display = "flex";
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+
+      async function handlePasswordSubmit() {
+        const password = passwordInput.value;
+        if (!password) {
+          alert("Please enter a password");
+          return;
+        }
+
+        if (isNewFile) {
+          currentPassword = password;
+          markdownContent = `# Main Title (H1)\n\n## Subtitle (H2)\n\n### Third-Level Heading (H3)\n\n#### Fourth-Level Heading (H4)\n\nThis is a **bold** word, this is *italic*, and this is ***bold & italic***.\nYou can also use ~~strikethrough~~ text.\n\nHere is some \`inline code\` inside a sentence.\n\n\`\`\`python\n# Code block example\ndef hello():\n    print("Hello, Markdown!")\n\`\`\`\n\n> This is a blockquote.\n> It can span multiple lines.\n\n---\n\n### Lists\n\n**Unordered list:**\n\n* Item one\n* Item two\n\n  * Nested item\n\n**Ordered list:**\n\n1. First\n2. Second\n3. Third\n\n**Task list:**\n\n* [x] Completed task\n* [ ] Incomplete task\n\n---\n\n### Link and Image\n\nThis is a [link to MeftunTech.](https://x.gd/MeftunTech).\n\n![Image alt text](https://picsum.photos/854/480)\n\n---\n\n### Table\n\n| Feature | Example | Supported |\n| ------- | ------- | --------- |\n| Bold    | **Yes** | ✔️        |\n| Italic  | *Yes*   | ✔️        |\n| Code    | \`Yes\`   | ✔️        |\n\n---\n\n### Inline HTML (optional in Markdown)\n\n<small>This text is small using HTML.</small>\n\n---\n\nThat’s a compact showcase of **Markdown formatting features** ✨\n`;
+          editor.value = markdownContent;
+          passwordModal.style.display = "none";
+          landing.style.display = "none";
+          editorArea.style.display = "block";
+          controls.style.display = "flex";
+        } else {
+          const encryptedContent = await loadFile(currentFilename);
+          if (!encryptedContent) {
+            alert("Error loading file");
+            passwordInput.value = "";
+            return;
+          }
+
+          const decrypted = decrypt(encryptedContent, password);
+          if (!decrypted) {
+            alert("Wrong password");
+            passwordInput.value = "";
+            return;
+          }
+
+          currentPassword = password;
+          markdownContent = decrypted;
+          editor.value = markdownContent;
+          passwordModal.style.display = "none";
+          landing.style.display = "none";
+          editorArea.style.display = "block";
+          controls.style.display = "flex";
+        }
+      }
+
+      async function handleGo() {
+        const docName = docNameInput.value.trim();
+        if (!docName) {
+          alert("Please enter a document name");
+          return;
+        }
+
+        window.location.href = `?n=${encodeURIComponent(docName)}`;
+      }
+
+      toggleBtn.addEventListener("click", toggleMode);
+      saveBtn.addEventListener("click", saveDocument);
+      passwordSubmit.addEventListener("click", handlePasswordSubmit);
+      passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handlePasswordSubmit();
+      });
+      goBtn.addEventListener("click", handleGo);
+      docNameInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleGo();
+      });
+
+      async function init() {
+        const filename = getFilenameFromURL();
+        if (!filename) {
+          landing.style.display = "flex";
+          return;
+        }
+
+        currentFilename = filename;
+        const exists = await checkFileExists(filename);
+        isNewFile = !exists;
+
+        if (isNewFile) {
+          showPasswordModal("Set Password for New Document");
+        } else {
+          showPasswordModal("Enter Password");
+        }
+      }
+
+      init();
+    </script>
+  </body>
+</html>
