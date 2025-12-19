@@ -364,6 +364,7 @@
       let currentPassword = "";
       let currentFilename = "";
       let markdownContent = "";
+      let savedContent = "";
       let isNewFile = false;
 
       let isChangingPassword = false;
@@ -476,6 +477,7 @@
           alert("File saved successfully!");
           isNewFile = false;
           markdownContent = content;
+          savedContent = content;
         } else {
           alert("Save failed");
         }
@@ -513,6 +515,7 @@
           currentPassword = password;
           markdownContent = `# Main Title (H1)\n\n## Subtitle (H2)\n\n### Third-Level Heading (H3)\n\n#### Fourth-Level Heading (H4)\n\nThis is a **bold** word, this is *italic*, and this is ***bold & italic***.\nYou can also use ~~strikethrough~~ text.\n\nHere is some \`inline code\` inside a sentence.\n\n\`\`\`python\n# Code block example\ndef hello():\n    print("Hello, Markdown!")\n\`\`\`\n\n> This is a blockquote.\n> It can span multiple lines.\n\n---\n\n### Lists\n\n**Unordered list:**\n\n* Item one\n* Item two\n\n  * Nested item\n\n**Ordered list:**\n\n1. First\n2. Second\n3. Third\n\n**Task list:**\n\n* [x] Completed task\n* [ ] Incomplete task\n\n---\n\n### Link and Image\n\nThis is a [link to MeftunTech.](https://x.gd/MeftunTech).\n\n![Image alt text](https://picsum.photos/854/480)\n\n---\n\n### Table\n\n| Feature | Example | Supported |\n| ------- | ------- | --------- |\n| Bold    | **Yes** | ✔️        |\n| Italic  | *Yes*   | ✔️        |\n| Code    | \`Yes\`   | ✔️        |\n\n---\n\n### Inline HTML (optional in Markdown)\n\n<small>This text is small using HTML.</small>\n\n---\n\nThat’s a compact showcase of **Markdown formatting features** ✨\n`;
           editor.value = markdownContent;
+          savedContent = markdownContent;
           passwordModal.style.display = "none";
           landing.style.display = "none";
           editorArea.style.display = "block";
@@ -544,6 +547,7 @@
 
           currentPassword = password;
           markdownContent = decrypted;
+          savedContent = markdownContent;
           editor.value = markdownContent;
           passwordModal.style.display = "none";
           landing.style.display = "none";
@@ -578,6 +582,13 @@
       goBtn.addEventListener("click", handleGo);
       docNameInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") handleGo();
+      });
+
+      window.addEventListener("beforeunload", (e) => {
+        if (editor.value !== savedContent) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
       });
 
       async function init() {
