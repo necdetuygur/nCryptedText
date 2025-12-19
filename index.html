@@ -348,6 +348,12 @@
       <div class="modal-content">
         <h2 id="passwordTitle">Enter Password</h2>
         <input type="password" id="passwordInput" placeholder="Password" />
+        <input
+          type="password"
+          id="passwordConfirmInput"
+          placeholder="Confirm Password"
+          style="display: none"
+        />
         <button id="passwordSubmit" style="width: 100%">Submit</button>
       </div>
     </div>
@@ -365,6 +371,9 @@
       const rendered = document.getElementById("rendered");
       const passwordModal = document.getElementById("passwordModal");
       const passwordInput = document.getElementById("passwordInput");
+      const passwordConfirmInput = document.getElementById(
+        "passwordConfirmInput",
+      );
       const passwordSubmit = document.getElementById("passwordSubmit");
       const passwordTitle = document.getElementById("passwordTitle");
       const landing = document.getElementById("landing");
@@ -472,6 +481,14 @@
         passwordTitle.textContent = title;
         passwordModal.style.display = "flex";
         passwordInput.value = "";
+        passwordConfirmInput.value = "";
+
+        if (isNewFile) {
+          passwordConfirmInput.style.display = "block";
+        } else {
+          passwordConfirmInput.style.display = "none";
+        }
+
         passwordInput.focus();
       }
 
@@ -483,6 +500,12 @@
         }
 
         if (isNewFile) {
+          const confirmPassword = passwordConfirmInput.value;
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+
           currentPassword = password;
           markdownContent = `# Main Title (H1)\n\n## Subtitle (H2)\n\n### Third-Level Heading (H3)\n\n#### Fourth-Level Heading (H4)\n\nThis is a **bold** word, this is *italic*, and this is ***bold & italic***.\nYou can also use ~~strikethrough~~ text.\n\nHere is some \`inline code\` inside a sentence.\n\n\`\`\`python\n# Code block example\ndef hello():\n    print("Hello, Markdown!")\n\`\`\`\n\n> This is a blockquote.\n> It can span multiple lines.\n\n---\n\n### Lists\n\n**Unordered list:**\n\n* Item one\n* Item two\n\n  * Nested item\n\n**Ordered list:**\n\n1. First\n2. Second\n3. Third\n\n**Task list:**\n\n* [x] Completed task\n* [ ] Incomplete task\n\n---\n\n### Link and Image\n\nThis is a [link to MeftunTech.](https://x.gd/MeftunTech).\n\n![Image alt text](https://picsum.photos/854/480)\n\n---\n\n### Table\n\n| Feature | Example | Supported |\n| ------- | ------- | --------- |\n| Bold    | **Yes** | ✔️        |\n| Italic  | *Yes*   | ✔️        |\n| Code    | \`Yes\`   | ✔️        |\n\n---\n\n### Inline HTML (optional in Markdown)\n\n<small>This text is small using HTML.</small>\n\n---\n\nThat’s a compact showcase of **Markdown formatting features** ✨\n`;
           editor.value = markdownContent;
@@ -529,6 +552,9 @@
       saveBtn.addEventListener("click", saveDocument);
       passwordSubmit.addEventListener("click", handlePasswordSubmit);
       passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handlePasswordSubmit();
+      });
+      passwordConfirmInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") handlePasswordSubmit();
       });
       goBtn.addEventListener("click", handleGo);
