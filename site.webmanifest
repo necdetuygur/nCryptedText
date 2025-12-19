@@ -1,0 +1,19 @@
+{
+  "name": "nCryptedText",
+  "short_name": "nCryptedText",
+  "icons": [
+    {
+      "src": "nCryptedText.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "nCryptedText.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#112233",
+  "background_color": "#112233",
+  "display": "standalone"
+}

@@ -33,6 +33,19 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (req.url.indexOf(".png") !== -1 || req.url.indexOf(".ico") !== -1) {
+    fs.readFile(path.join(__dirname, req.url), (err, data) => {
+      if (err) {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end("Error loading page");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "image/png" });
+      res.end(data);
+    });
+    return;
+  }
+
   if (req.url.startsWith("/check/")) {
     const filename = decodeURIComponent(req.url.replace("/check/", ""));
     const filepath = path.join(MARKDOWN_DIR, `${filename}.md`);
