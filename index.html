@@ -645,6 +645,23 @@
         }
       });
 
+      document.addEventListener("keydown", (e) => {
+        if (
+          (e.ctrlKey || e.metaKey || e.altKey) &&
+          e.key.toLowerCase() === "t"
+        ) {
+          e.preventDefault();
+          toggleMode();
+        }
+        if (
+          (e.ctrlKey || e.metaKey || e.altKey) &&
+          e.key.toLowerCase() === "s"
+        ) {
+          e.preventDefault();
+          saveDocument();
+        }
+      });
+
       async function init() {
         const filename = getFilenameFromURL();
         if (!filename) {
