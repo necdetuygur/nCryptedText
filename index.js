@@ -33,14 +33,26 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  if (req.url.indexOf(".png") !== -1 || req.url.indexOf(".ico") !== -1) {
+  if (
+    req.url.indexOf(".png") !== -1 ||
+    req.url.indexOf(".ico") !== -1 ||
+    req.url.indexOf(".webmanifest") !== -1
+  ) {
     fs.readFile(path.join(__dirname, req.url), (err, data) => {
       if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end("Error loading page");
         return;
       }
-      res.writeHead(200, { "Content-Type": "image/png" });
+      const contentType =
+        req.url.indexOf(".png") !== -1
+          ? "image/png"
+          : req.url.indexOf(".ico") !== -1
+          ? "image/x-icon"
+          : req.url.indexOf(".webmanifest") !== -1
+          ? "application/manifest+json"
+          : "text/plain";
+      res.writeHead(200, { "Content-Type": contentType });
       res.end(data);
     });
     return;
