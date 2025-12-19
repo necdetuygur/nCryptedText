@@ -22,6 +22,15 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
     <style>
       :root {
         color-scheme: dark;
@@ -413,6 +422,25 @@
       const docNameInput = document.getElementById("docNameInput");
       const goBtn = document.getElementById("goBtn");
 
+      function showToast(message, type = "info") {
+        let backgroundColor = "#2a4d6d"; // Default blue
+        if (type === "error") backgroundColor = "#c73e3e"; // Red for error
+        if (type === "success") backgroundColor = "#2a6d4d"; // Green for success
+
+        Toastify({
+          text: message,
+          duration: 3000,
+          gravity: "top", // `top` or `bottom`
+          position: "center", // `left`, `center` or `right`
+          style: {
+            background: backgroundColor,
+            borderRadius: "6px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            fontFamily: '"Signika", Arial, sans-serif',
+          },
+        }).showToast();
+      }
+
       function getFilenameFromURL() {
         const params = new URLSearchParams(window.location.search);
         return params.get("n");
@@ -491,7 +519,7 @@
 
       async function saveDocument() {
         if (!currentPassword) {
-          alert("Password not set");
+          showToast("Password not set", "error");
           return;
         }
 
@@ -500,12 +528,12 @@
 
         const success = await saveFile(currentFilename, encrypted);
         if (success) {
-          alert("File saved successfully!");
+          showToast("File saved successfully!", "success");
           isNewFile = false;
           markdownContent = content;
           savedContent = content;
         } else {
-          alert("Save failed");
+          showToast("Save failed", "error");
         }
       }
 
@@ -527,14 +555,14 @@
       async function handlePasswordSubmit() {
         const password = passwordInput.value;
         if (!password) {
-          alert("Please enter a password");
+          showToast("Please enter a password", "error");
           return;
         }
 
         if (isNewFile) {
           const confirmPassword = passwordConfirmInput.value;
           if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+            showToast("Passwords do not match!", "error");
             return;
           }
 
@@ -549,7 +577,7 @@
         } else if (isChangingPassword) {
           const confirmPassword = passwordConfirmInput.value;
           if (password !== confirmPassword) {
-            alert("Passwords do not match!");
+            showToast("Passwords do not match!", "error");
             return;
           }
           currentPassword = password;
@@ -559,14 +587,14 @@
         } else {
           const encryptedContent = await loadFile(currentFilename);
           if (!encryptedContent) {
-            alert("Error loading file");
+            showToast("Error loading file", "error");
             passwordInput.value = "";
             return;
           }
 
           const decrypted = decrypt(encryptedContent, password);
           if (!decrypted) {
-            alert("Wrong password");
+            showToast("Wrong password", "error");
             passwordInput.value = "";
             return;
           }
@@ -585,7 +613,7 @@
       async function handleGo() {
         const docName = docNameInput.value.trim();
         if (!docName) {
-          alert("Please enter a document name");
+          showToast("Please enter a document name", "error");
           return;
         }
 
