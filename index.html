@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="dark" />
     <link href="favicon.ico" rel="shortcut icon" />
-    <link rel="icon" sizes="192x192" href="android-chrome-192x192.png" />
-    <link rel="icon" sizes="512x512" href="android-chrome-512x512.png" />
+    <link rel="icon" sizes="192x192" href="nCryptedText.png" />
+    <link rel="icon" sizes="512x512" href="nCryptedText.png" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no, maximum-scale=1.0"
@@ -450,20 +450,21 @@
           type = "text/markdown";
           extension = "md";
         } else {
-          content =
-            `
-              <link rel="preconnect" href="https://fonts.googleapis.com" />
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-              <link
-                href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Signika:wght@400;500;600&display=swap"
-                rel="stylesheet"
-              />
-              <style>
-                body {
-                  font-family: "Signika", Arial, sans-serif;
-                }
-              </style>
-            ` + rendered.innerHTML;
+          content = `
+              <!DOCTYPE html>
+              <html>
+                <head>
+                  ${document.head.innerHTML
+                    .trim()
+                    .replace(/\<link(.*?)site.webmanifest(.*?)\>/gi, "")
+                    .replace(/\n/gi, "")
+                    .replace(/\ \ /gi, "")}
+                </head>
+                <body>
+                  ${rendered.parentNode.innerHTML}
+                </body>
+              </html>
+            `;
           type = "text/html";
           extension = "html";
         }
