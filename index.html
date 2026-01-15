@@ -459,6 +459,7 @@
                     .replace(/\<link(.*?)site.webmanifest(.*?)\>/gi, "")
                     .replace(/\n/gi, "")
                     .replace(/\ \ /gi, "")}
+                    <style>body{padding-top: 1rem;}</style>
                 </head>
                 <body>
                   ${rendered.parentNode.innerHTML}
